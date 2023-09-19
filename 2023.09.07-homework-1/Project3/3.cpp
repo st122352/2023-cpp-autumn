@@ -2,8 +2,8 @@
 
 int main(int argc, char* argv[])
 {
-    int long long a;
-    int long long b;
+    int long long a = 0;
+    int long long b = 0;
 
     std::cin >> a;
 

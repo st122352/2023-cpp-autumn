@@ -2,10 +2,10 @@
 
 int main(int argc, char* argv[])
 {
-    int v;
-    int t;
-    int d;
-    int s;
+    int v = 0;
+    int t = 0;
+    int d = 0;
+    int s = 0;
 
     std::cin >> v >> t;
 

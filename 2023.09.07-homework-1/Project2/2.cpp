@@ -2,10 +2,10 @@
 
 int main(int argc, char* argv[])
 {
-	int a;
-	int S;
-	int N;
-	int d;
+	int a = 0;
+	int S = 0;
+	int N = 0;
+	int d = 0;
 
 
 	a = 1;
