@@ -2,12 +2,12 @@
 
 int main(int argc, char* argv[]) {
 
-	int n;
-	int b1;
-	int b5;
-	int b10;
-	int b20;
-	int b60;
+	int n =0 ;
+	int b1 = 0;
+	int b5 = 0;
+	int b10 = 0;
+	int b20 = 0;
+	int b60 = 0;
 
 	std::cin >> n;
 

@@ -12,14 +12,22 @@ int main(int argc, char* argv[])
 	{
 
 		if (a % i == 0)
+		{
 
 			++n;
+
+		}
+
 	}
+
 	n = n * 2;
 
 	if (sqrt(a) == int(sqrt(a)))
+	{
 
 		++n;
+
+	}
 
 	std::cout << n;
 
