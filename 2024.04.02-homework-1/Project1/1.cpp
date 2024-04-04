@@ -31,8 +31,6 @@ public:
 	void ReadEdges(int edges, bool haveweight = false);
 	int edgesCount();
 	int roadsCount();
-	int vertexCount();
-	int power(int vertex);
 
 private:
 	///создает матрицу смежности n*n и матрицу с дугами размера m
@@ -280,23 +278,4 @@ int CGraph::edgesCount()
 int CGraph::roadsCount()
 {
 	return edgesCount() / 2;
-}
-
-int CGraph::vertexCount()
-{
-	if (_matrix == nullptr)
-	{
-		initMatrixFromEdges();
-	}
-	return _vertexes;
-}
-
-int CGraph::power(int vertex)
-{
-	int r = 0;
-	for (int i = 0; i < vertexCount(); ++i)
-	{
-		r += (_matrix[vertex][i] != 0);
-	}
-	return r;
 }

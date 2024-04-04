@@ -93,9 +93,9 @@ void CGraph::PrintMatrix()
 		}
 		initMatrixFromEdges();
 	}
-	for (int i = 1; i < _vertexes; ++i)
+	for (int i = 0; i < _vertexes; ++i)
 	{
-		for (int j = 1; j < _vertexes; ++j)
+		for (int j = 0; j < _vertexes; ++j)
 		{
 			std::cout << _matrix[i][j] << " ";
 		}
@@ -140,12 +140,13 @@ void CGraph::ReadEdges(int edges, std::istream& stream, bool haveweight)
 	initEdges();
 	for (int i = 0; i < _edges; ++i)
 	{
-		std::cin >> _edge[i].a >> _edge[i].b;
+		stream >> _edge[i].a >> _edge[i].b;
 		if (haveweight)
 		{
-			std::cin >> _edge[i].w;
+			stream >> _edge[i].w;
 		}
 	}
+	initMatrixFromEdges();
 }
 
 void CGraph::init()
@@ -278,9 +279,9 @@ int CGraph::vertexCount()
 
 bool CGraph::Full()
 {
-	for (int i = 1; i < (vertexCount() - 1); ++i)
+	for (int i = 1; i < (vertexCount()); ++i)
 	{
-		for (int j = i + 1; j < (vertexCount() - 1); ++j)
+		for (int j = i + 1; j < (vertexCount()); ++j)
 		{
 			if (_matrix[i][j] + _matrix[j][i] == 0)
 			{

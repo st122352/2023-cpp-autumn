@@ -92,9 +92,9 @@ void CGraph::PrintMatrix()
 		}
 		initMatrixFromEdges();
 	}
-	for (int i = 1; i < _vertexes; ++i)
+	for (int i = 0; i < _vertexes; ++i)
 	{
-		for (int j = 1; j < _vertexes; ++j)
+		for (int j = 0; j < _vertexes; ++j)
 		{
 			std::cout << _matrix[i][j] << " ";
 		}
@@ -139,12 +139,13 @@ void CGraph::ReadEdges(int edges, std::istream& stream, bool haveweight)
 	initEdges();
 	for (int i = 0; i < _edges; ++i)
 	{
-		std::cin >> _edge[i].a >> _edge[i].b;
+		stream >> _edge[i].a >> _edge[i].b;
 		if (haveweight)
 		{
-			std::cin >> _edge[i].w;
+			stream >> _edge[i].w;
 		}
 	}
+	initMatrixFromEdges();
 }
 
 void CGraph::init()
@@ -265,26 +266,16 @@ std::ostream& operator<<(std::ostream& stream, const SEdge& edge)
 	}
 	return stream;
 }
-
 void CGraph::Svetoforchiki(int v)
 {
 	int c = 0;
-	if (_matrix == nullptr)
+	for (int i = 0; i < v; ++i)
 	{
-		if (_edge == nullptr)
-		{
-			std::cout << "Graph empty" << std::endl;
-			return;
-		}
-		initMatrixFromEdges();
-	}
-	for (int i = 1; i <= v; ++i)
-	{
-		for (int j = 1; j <= v; ++j)
+		for (int j = 0; j < v; ++j)
 		{
 			if (i != j)
 			{
-				c = c + _matrix[i][j] + _matrix[j][i];
+				c = c + _matrix[i + 1][j + 1] + _matrix[j + 1][i + 1];
 			}
 		}
 		std::cout << c << " ";

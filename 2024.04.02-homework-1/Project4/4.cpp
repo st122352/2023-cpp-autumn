@@ -29,6 +29,7 @@ public:
 	void ReadMatrix(int vertexes, std::istream& stream);
 	///считывает дуги графа
 	void ReadEdges(int edges, std::istream& stream, bool haveweight = false);
+	int vertexCount();
 	void ways(int v);
 
 private:
@@ -265,25 +266,25 @@ std::ostream& operator<<(std::ostream& stream, const SEdge& edge)
 	return stream;
 }
 
+int CGraph::vertexCount()
+{
+	if (_matrix == nullptr)
+	{
+		initMatrixFromEdges();
+	}
+	return _vertexes;
+}
+
+
 void CGraph::ways(int v)
 {
-	int max = 0;
-	for (int i = 0; i < v; i++)
-	{
-		for (int j = 0; j < v; j++)
-		{
-			if (max < _matrix[i][j])
-			{
-				max = _matrix[i][j];
-			}
-		}
-	}
+	int max = 3000;
 
-	for (int i = 0; i < v; i++)
+	for (int i = 0; i < vertexCount(); i++)
 	{
-		for (int j = i + 1; j < v; j++)
+		for (int j = i + 1; j < vertexCount(); j++)
 		{
-			for (int k = j + 1; k < v; k++)
+			for (int k = j + 1; k < vertexCount(); k++)
 			{
 				if (max > _matrix[i][j] + _matrix[j][k] + _matrix[i][k])
 				{

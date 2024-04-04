@@ -30,8 +30,7 @@ public:
 	///считывает дуги графа
 	void ReadEdges(int edges, std::istream& stream, bool haveweight = false);
 	int vertexCount();
-	bool isTour();
-
+	int planets();
 
 private:
 	///создает матрицу смежности n*n и матрицу с дугами размера m
@@ -61,13 +60,13 @@ int main(int argc, char* argv[])
 {
 	int v = 0;
 	std::cin >> v;
-	int e = 0;
-	std::cin >> e;
-	CGraph g(v, e);
-	g.ReadEdges(e, std::cin);
-	std::cout << (g.isTour() ? "YES" : "NO") << std::endl;
+	CGraph g(v, 0);
+	g.ReadEdges(v - 1, std::cin);
+	int n = g.planets();
+	std::cout << n << std::endl;
 	return EXIT_SUCCESS;
 }
+
 
 CGraph::CGraph()
 	: _vertexes(0), _edges(0), _matrix(nullptr), _edge(nullptr) {}
@@ -94,9 +93,9 @@ void CGraph::PrintMatrix()
 		}
 		initMatrixFromEdges();
 	}
-	for (int i = 0; i < _vertexes; ++i)
+	for (int i = 1; i < _vertexes; ++i)
 	{
-		for (int j = 0; j < _vertexes; ++j)
+		for (int j = 1; j < _vertexes; ++j)
 		{
 			std::cout << _matrix[i][j] << " ";
 		}
@@ -278,34 +277,27 @@ int CGraph::vertexCount()
 	return _vertexes;
 }
 
-bool CGraph::isTour()
+int CGraph::planets()
 {
-	for (int i = 1; i < (vertexCount() - 1); ++i)
+	int vertex = vertexCount();
+	int cnt = 0;
+	int* planet = new int[vertex + 1] { 0 };
+
+	for (int i = 0; i < _edges; ++i)
 	{
-		int c = 1;
-		for (int j = 1; j < (vertexCount() - 1); ++j)
+		planet[_edge[i].a]++;
+		planet[_edge[i].b]++;
+	}
+
+	for (int i = 1; i < vertex; ++i)
+	{
+		if (planet[i] > 1)
 		{
-			if (_matrix[i][j] + _matrix[j][i] == 2)
-			{
-				return false;
-			}
-			c += (_matrix[i][j] | _matrix[j][i]);
-		}
-		if (c != vertexCount() - 2)
-		{
-			return false;
+			cnt++;
 		}
 	}
 
-	for (int i = 1; i < vertexCount() - 1; i++)
-	{
-		for (int j = 1; j < vertexCount() - 1; j++)
-		{
-			if ((i != j) && (_matrix[i][j] + _matrix[j][i] != 1))
-			{
-				return false;
-			}
-		}
-	}
-	return true;
+	delete[] planet;
+
+	return cnt;
 }

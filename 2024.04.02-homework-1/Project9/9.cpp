@@ -1,4 +1,4 @@
-#include<iostream>
+п»ї#include<iostream>
 
 struct SEdge {
 	int a;
@@ -21,33 +21,33 @@ public:
 	CGraph();
 	CGraph(int vertexes, int edges);
 	~CGraph();
-	///выводит матрицу смежности графа
+	///РІС‹РІРѕРґРёС‚ РјР°С‚СЂРёС†Сѓ СЃРјРµР¶РЅРѕСЃС‚Рё РіСЂР°С„Р°
 	void PrintMatrix();
-	///выводит дуги графа
+	///РІС‹РІРѕРґРёС‚ РґСѓРіРё РіСЂР°С„Р°
 	void PrintEdges();
-	///считывает матрицу смежности графа
+	///СЃС‡РёС‚С‹РІР°РµС‚ РјР°С‚СЂРёС†Сѓ СЃРјРµР¶РЅРѕСЃС‚Рё РіСЂР°С„Р°
 	void ReadMatrix(int vertexes, std::istream& stream);
-	///считывает дуги графа
+	///СЃС‡РёС‚С‹РІР°РµС‚ РґСѓРіРё РіСЂР°С„Р°
 	void ReadEdges(int edges, std::istream& stream, bool haveweight = false);
 	int vertexCount();
 	void inputAdjencyList();
 
 private:
-	///создает матрицу смежности n*n и матрицу с дугами размера m
+	///СЃРѕР·РґР°РµС‚ РјР°С‚СЂРёС†Сѓ СЃРјРµР¶РЅРѕСЃС‚Рё n*n Рё РјР°С‚СЂРёС†Сѓ СЃ РґСѓРіР°РјРё СЂР°Р·РјРµСЂР° m
 	void init();
-	///создает матрицу смежности _vertexes*_vertexes
+	///СЃРѕР·РґР°РµС‚ РјР°С‚СЂРёС†Сѓ СЃРјРµР¶РЅРѕСЃС‚Рё _vertexes*_vertexes
 	void initMatrix();
-	///создает матрицу матрицу с дугами размера _edges
+	///СЃРѕР·РґР°РµС‚ РјР°С‚СЂРёС†Сѓ РјР°С‚СЂРёС†Сѓ СЃ РґСѓРіР°РјРё СЂР°Р·РјРµСЂР° _edges
 	void initEdges();
 	void initMatrixFromEdges();
 	void initEdgesFromMatrix();
 	int getVertexesCountFromEdges();
 	int getEdgesCountFromMatrix();
-	///удаляет матрицу смежности и матрицу с дугами
+	///СѓРґР°Р»СЏРµС‚ РјР°С‚СЂРёС†Сѓ СЃРјРµР¶РЅРѕСЃС‚Рё Рё РјР°С‚СЂРёС†Сѓ СЃ РґСѓРіР°РјРё
 	void dispose();
-	///удаляет матрицу смежности
+	///СѓРґР°Р»СЏРµС‚ РјР°С‚СЂРёС†Сѓ СЃРјРµР¶РЅРѕСЃС‚Рё
 	void disposeMatrix();
-	///удаляет матрицу с дугами
+	///СѓРґР°Р»СЏРµС‚ РјР°С‚СЂРёС†Сѓ СЃ РґСѓРіР°РјРё
 	void disposeEdges();
 
 	int _vertexes;
@@ -92,9 +92,9 @@ void CGraph::PrintMatrix()
 		}
 		initMatrixFromEdges();
 	}
-	for (int i = 1; i < _vertexes; ++i)
+	for (int i = 0; i < _vertexes; ++i)
 	{
-		for (int j = 1; j < _vertexes; ++j)
+		for (int j = 0; j < _vertexes; ++j)
 		{
 			std::cout << _matrix[i][j] << " ";
 		}
