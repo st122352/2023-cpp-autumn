@@ -1,15 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct Pixel {
+struct Pixel
+{
     unsigned char r, g, b;
 };
 
-// загрузка BMP
-struct Pixel** readBMP(const char* filename, unsigned int* width, unsigned int* height) {
-    FILE* file = fopen(filename, "rb");
-    if (!file) {
-        fprintf(stderr, "Не удалось открыть файл %s\n", filename);
+struct Pixel** readBMP(const char* filename, unsigned int* width, unsigned int* height)
+{
+    FILE* file = 0x0;
+    fopen_s(&file, filename, "rb");
+    if (!file)
+    {
+        fprintf(stderr, "Невозможно прочитать файл %s\n", filename);
         return NULL;
     }
 
@@ -20,38 +23,43 @@ struct Pixel** readBMP(const char* filename, unsigned int* width, unsigned int* 
     *width = *(unsigned int*)&header[18];
     *height = *(unsigned int*)&header[22];
 
-    // Память под картинку
     struct Pixel** image = (struct Pixel**)malloc(*height * sizeof(struct Pixel*));
-    for (unsigned int i = 0; i < *height; i++) {
+    for (unsigned int i = 0; i < *height; i++)
+    {
         image[i] = (struct Pixel*)malloc(*width * sizeof(struct Pixel));
     }
 
-    // сама картинка
     unsigned int padding = (*width * 3) % 4;
-    if (padding != 0) {
+    if (padding != 0)
+    {
         padding = 4 - padding;
     }
-    for (unsigned int y = 0; y < *height; y++) {
-        for (unsigned int x = 0; x < *width; x++) {
+    for (unsigned int y = 0; y < *height; y++)
+    {
+        for (unsigned int x = 0; x < *width; x++)
+        {
             fread(&image[*height - 1 - y][x], sizeof(struct Pixel), 1, file);
         }
         fseek(file, padding, SEEK_CUR);
     }
 
     fclose(file);
+
     return image;
 }
 
-// дамп в файл
-void writeBMP(const char* filename, unsigned int width, unsigned int height, struct Pixel** image) {
-    FILE* file = fopen(filename, "wb");
-    if (!file) {
-        fprintf(stderr, "Не удалось создать файл %s\n", filename);
+void writeBMP(const char* filename, unsigned int width, unsigned int height, struct Pixel** image)
+{
+    FILE* file = 0x0;
+    fopen_s(&file, filename, "wb");
+    if (!file)
+    {
+        fprintf(stderr, "Невозможно записать файл %s\n", filename);
         return;
     }
 
-    // Заголовок BMP файла
-    unsigned char header[54] = {
+    unsigned char header[54] =
+    {
             0x42, 0x4D,             // Буквы 'BM' (тип файла)
             0, 0, 0, 0,             // Размер файла (пока неизвестен)
             0, 0,                   // Зарезервированные байты
@@ -68,29 +76,34 @@ void writeBMP(const char* filename, unsigned int width, unsigned int height, str
             0, 0, 0, 0,             // Вертикальное разрешение пикселей в метрах (пока неизвестно)
             0, 0, 0, 0,             // Количество цветов в палитре (пока не используется)
             0, 0, 0, 0              // Количество важных цветов (пока не используется)
+
     };
 
-    // размер пикселей
     unsigned int padding = (width * 3) % 4;
-    if (padding != 0) {
+
+    if (padding != 0)
+    {
         padding = 4 - padding;
     }
+
     unsigned int dataSize = (width * 3 + padding) * height;
 
-    // обновление заголовка
     *(unsigned int*)&header[2] = 54 + dataSize;
     *(unsigned int*)&header[34] = dataSize;
 
-    // запись заголовка
     fwrite(header, sizeof(unsigned char), 54, file);
 
-    // пищем картинку
-    for (unsigned int y = 0; y < height; y++) {
-        for (unsigned int x = 0; x < width; x++) {
+    for (unsigned int y = 0; y < height; y++)
+    {
+        for (unsigned int x = 0; x < width; x++)
+        {
             fwrite(&image[height - 1 - y][x], sizeof(struct Pixel), 1, file);
         }
+
         unsigned char pad = 0;
-        for (unsigned int p = 0; p < padding; p++) {
+
+        for (unsigned int p = 0; p < padding; p++)
+        {
             fwrite(&pad, sizeof(unsigned char), 1, file);
         }
     }
@@ -98,25 +111,75 @@ void writeBMP(const char* filename, unsigned int width, unsigned int height, str
     fclose(file);
 }
 
+// функция преобразования цветного пикселя в черно-белый
+struct Pixel convertToGrayscale(struct Pixel pixel)
+{
+    struct Pixel grayscale_pixel;
+
+    unsigned char average = (pixel.r + pixel.g + pixel.b) / 3;
+
+    grayscale_pixel.r = average;
+    grayscale_pixel.g = average;
+    grayscale_pixel.b = average;
+
+    return grayscale_pixel;
+}
+
+void increaseBrightness(unsigned int width, unsigned int height, struct Pixel** image, unsigned char value)
+{
+    for (unsigned int y = 0; y < height; y++)
+    {
+        for (unsigned int x = 0; x < width; x++)
+        {
+            image[y][x].r = image[y][x].r + value > 255 ? 255 : image[y][x].r + value;
+            image[y][x].g = image[y][x].g + value > 255 ? 255 : image[y][x].g + value;
+            image[y][x].b = image[y][x].b + value > 255 ? 255 : image[y][x].b + value;
+        }
+    }
+}
+
+
+// функция применения черно-белого фильтра к изображению
+void applyGrayscaleFilter(unsigned int width, unsigned int height, struct Pixel** image)
+{
+    for (unsigned int y = 0; y < height; y++)
+    {
+        for (unsigned int x = 0; x < width; x++)
+        {
+            image[y][x] = convertToGrayscale(image[y][x]);
+        }
+    }
+}
+
 // Линейная фильрация: blur, размытие
 void applyLinearFilter(unsigned int width, unsigned int height, struct Pixel** image) {
     // Копия картинки в памяти
     struct Pixel** filtered_image = (struct Pixel**)malloc(height * sizeof(struct Pixel*));
-    for (unsigned int i = 0; i < height; i++) {
+    for (unsigned int i = 0; i < height; i++)
+    {
         filtered_image[i] = (struct Pixel*)malloc(width * sizeof(struct Pixel));
     }
 
     // Сама фильтрация
-    for (unsigned int y = 0; y < height; y++) {
-        for (unsigned int x = 0; x < width; x++) {
-            // Усреднение как критериальная функция
-            unsigned int sum_r = 0, sum_g = 0, sum_b = 0;
+    for (unsigned int y = 0; y < height; y++)
+    {
+        for (unsigned int x = 0; x < width; x++)
+        {
+            // Усреднение как критериальная функция с увеличенным радиусом
+            unsigned int sum_r = 0;
+            unsigned int sum_g = 0;
+            unsigned int sum_b = 0;
             unsigned int count = 0;
-            for (int dy = -1; dy <= 1; dy++) {
-                for (int dx = -1; dx <= 1; dx++) {
+
+            for (int dy = -5; dy <= 5; dy++)
+            {
+                for (int dx = -5; dx <= 5; dx++)
+                {
                     int nx = x + dx;
                     int ny = y + dy;
-                    if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+
+                    if (nx >= 0 && nx < width && ny >= 0 && ny < height)
+                    {
                         sum_r += image[ny][nx].r;
                         sum_g += image[ny][nx].g;
                         sum_b += image[ny][nx].b;
@@ -131,35 +194,61 @@ void applyLinearFilter(unsigned int width, unsigned int height, struct Pixel** i
         }
     }
 
+
     // отфильтрованное -> исходное
-    for (unsigned int i = 0; i < height; i++) {
-        for (unsigned int j = 0; j < width; j++) {
+    for (unsigned int i = 0; i < height; i++)
+    {
+        for (unsigned int j = 0; j < width; j++)
+        {
             image[i][j] = filtered_image[i][j];
         }
     }
 
     // Чистим память: отфильтрованное изображение уже не нужно
-    for (unsigned int i = 0; i < height; i++) {
+    for (unsigned int i = 0; i < height; i++)
+    {
         free(filtered_image[i]);
     }
+
     free(filtered_image);
+
 }
 
-int main() {
+int main(int argc, char* argv[])
+{
     unsigned int width, height;
     struct Pixel** image = readBMP("input.bmp", &width, &height);
-    if (!image) {
+    if (!image)
+    {
         return 1;
     }
 
-    applyLinearFilter(width, height, image);
-    writeBMP("output.bmp", width, height, image);
+    unsigned char v = 100;
+    increaseBrightness(width, height, image, v);
+    writeBMP("output1.bmp", width, height, image);
 
-    // Освобождаем память
-    for (unsigned int i = 0; i < height; i++) {
+    for (unsigned int i = 0; i < height; i++)
+    {
         free(image[i]);
     }
     free(image);
+
+    image = readBMP("input.bmp", &width, &height);
+    applyGrayscaleFilter(width, height, image);
+    writeBMP("output2.bmp", width, height, image);
+
+    for (unsigned int i = 0; i < height; i++)
+    {
+        free(image[i]);
+    }
+    free(image);
+
+    image = readBMP("input.bmp", &width, &height);
+    applyLinearFilter(width, height, image);
+    applyLinearFilter(width, height, image);
+    applyLinearFilter(width, height, image);
+    applyLinearFilter(width, height, image);
+    writeBMP("output3.bmp", width, height, image);
 
     return 0;
 }
